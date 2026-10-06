@@ -1,9 +1,7 @@
 import json
-import platform
 import re
 import shutil
 import subprocess
-import threading
 import uuid
 import zipfile
 from pathlib import Path
@@ -45,8 +43,19 @@ def sanitize_label(label: str, fallback: str) -> str:
     return label or fallback
 
 
-def ffmpeg_exists() -> bool:
-    return shutil.which("ffmpeg") is not None
+def find_ffmpeg():
+    """PC에 설치된 ffmpeg를 우선 사용하고, 없으면 imageio-ffmpeg 패키지에 포함된 ffmpeg를 사용한다."""
+    system_ffmpeg = shutil.which("ffmpeg")
+    if system_ffmpeg:
+        return system_ffmpeg
+    try:
+        import imageio_ffmpeg
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception:
+        return None
+
+
+FFMPEG = find_ffmpeg()
 
 
 def build_vf_filter(crop_ratio: str, resolution: str):
@@ -65,96 +74,11 @@ def build_vf_filter(crop_ratio: str, resolution: str):
     return ",".join(parts) if parts else None
 
 
-install_jobs = {}
-install_lock = threading.Lock()
-MAX_LOG_CHARS = 6000
-
-
-def _append_log(job_id: str, text: str):
-    with install_lock:
-        job = install_jobs[job_id]
-        job["log"] += text
-        if len(job["log"]) > MAX_LOG_CHARS:
-            job["log"] = job["log"][-MAX_LOG_CHARS:]
-
-
-def _finish_job(job_id: str, success: bool, message: str = ""):
-    with install_lock:
-        job = install_jobs[job_id]
-        job["done"] = True
-        job["success"] = success
-        if message:
-            job["log"] += ("\n" + message)
-
-
-def _run_and_stream(job_id: str, cmd: list):
-    try:
-        proc = subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-            text=True, bufsize=1,
-        )
-        for line in proc.stdout:
-            _append_log(job_id, line)
-        proc.wait(timeout=600)
-        return proc.returncode == 0
-    except Exception as e:
-        _append_log(job_id, f"\n실행 중 오류: {e}\n")
-        return False
-
-
-def _install_worker(job_id: str):
-    system = platform.system()
-
-    if system == "Darwin":
-        if shutil.which("brew") is not None:
-            _append_log(job_id, "brew install ffmpeg 실행 중... (수 분 소요될 수 있습니다)\n")
-            ok = _run_and_stream(job_id, ["brew", "install", "ffmpeg"])
-        elif shutil.which("port") is not None:
-            _append_log(job_id, "MacPorts로 ffmpeg 설치 중... (관리자 비밀번호가 필요할 수 있습니다, 수 분 소요)\n")
-            ok = _run_and_stream(job_id, ["sudo", "port", "install", "ffmpeg"])
-        else:
-            _finish_job(
-                job_id, False,
-                "Homebrew/MacPorts가 설치되어 있지 않아 자동 설치를 진행할 수 없습니다.\n"
-                "Apple Silicon Mac이면 아래 'Homebrew 설치 명령'을, Intel Mac이면 'MacPorts' 설치 방법을 먼저 진행한 뒤 다시 시도해 주세요.",
-            )
-            return
-    elif system == "Windows":
-        if shutil.which("winget") is not None:
-            _append_log(job_id, "winget으로 ffmpeg 설치 중...\n")
-            ok = _run_and_stream(job_id, [
-                "winget", "install", "--id=Gyan.FFmpeg", "-e",
-                "--silent", "--accept-package-agreements", "--accept-source-agreements",
-            ])
-        elif shutil.which("choco") is not None:
-            _append_log(job_id, "Chocolatey로 ffmpeg 설치 중...\n")
-            ok = _run_and_stream(job_id, ["choco", "install", "ffmpeg", "-y"])
-        else:
-            _finish_job(
-                job_id, False,
-                "winget/Chocolatey를 찾을 수 없어 자동 설치를 진행할 수 없습니다.\n"
-                "아래 '수동 설치 방법'을 따라 설치해 주세요.",
-            )
-            return
-    else:
-        _finish_job(job_id, False, "지원하지 않는 운영체제입니다. 수동 설치 방법을 참고해 주세요.")
-        return
-
-    if ok and ffmpeg_exists():
-        _finish_job(job_id, True, "설치 완료! ffmpeg를 사용할 수 있습니다.")
-    else:
-        _finish_job(
-            job_id, False,
-            "자동 설치에 실패했습니다. 터미널 창이 열렸다면 안내에 따라 진행해 보거나,\n"
-            "아래 '수동 설치 방법'을 참고해 주세요.",
-        )
-
-
 def cut_segment(input_path: Path, start: str, end: str, out_path: Path, accurate: bool, vf_filter: str = None):
     needs_reencode = accurate or vf_filter is not None
     if needs_reencode:
         cmd = [
-            "ffmpeg", "-y",
+            FFMPEG, "-y",
             "-i", str(input_path),
             "-ss", start, "-to", end,
         ]
@@ -167,7 +91,7 @@ def cut_segment(input_path: Path, start: str, end: str, out_path: Path, accurate
         ]
     else:
         cmd = [
-            "ffmpeg", "-y",
+            FFMPEG, "-y",
             "-ss", start, "-to", end,
             "-i", str(input_path),
             "-c", "copy",
@@ -181,47 +105,14 @@ def cut_segment(input_path: Path, start: str, end: str, out_path: Path, accurate
 def index():
     return render_template(
         "index.html",
-        ffmpeg_ready=ffmpeg_exists(),
-        os_name=platform.system(),
+        ffmpeg_ready=FFMPEG is not None,
     )
-
-
-@app.route("/ffmpeg/status")
-def ffmpeg_status():
-    return jsonify({"installed": ffmpeg_exists()})
-
-
-@app.route("/ffmpeg/install", methods=["POST"])
-def ffmpeg_install():
-    if ffmpeg_exists():
-        return jsonify({"job_id": None, "already_installed": True})
-
-    with install_lock:
-        running = [j for j in install_jobs.values() if not j["done"]]
-    if running:
-        return jsonify({"error": "이미 설치가 진행 중입니다."}), 409
-
-    job_id = uuid.uuid4().hex[:8]
-    with install_lock:
-        install_jobs[job_id] = {"log": "", "done": False, "success": False}
-
-    threading.Thread(target=_install_worker, args=(job_id,), daemon=True).start()
-    return jsonify({"job_id": job_id})
-
-
-@app.route("/ffmpeg/install/<job_id>")
-def ffmpeg_install_progress(job_id):
-    with install_lock:
-        job = install_jobs.get(job_id)
-        if job is None:
-            return jsonify({"error": "알 수 없는 작업입니다."}), 404
-        return jsonify(dict(job))
 
 
 @app.route("/process", methods=["POST"])
 def process():
-    if not ffmpeg_exists():
-        return jsonify({"error": "이 PC에 ffmpeg가 설치되어 있지 않습니다. ffmpeg를 설치한 뒤 다시 시도해 주세요."}), 400
+    if FFMPEG is None:
+        return jsonify({"error": "영상 처리 도구(ffmpeg)를 불러오지 못했습니다. 프로그램 폴더의 venv 폴더를 삭제한 뒤 다시 실행해 주세요."}), 500
 
     video = request.files.get("video")
     segments_raw = request.form.get("segments")

@@ -4,17 +4,15 @@
 
 ## 사용 전 준비물 (최초 1회)
 
-1. **Python 3** 설치 — https://www.python.org/downloads/ (설치 시 "Add to PATH" 체크)
-2. **ffmpeg** 설치
-   - ffmpeg가 없는 상태로 앱을 실행하면 화면에 **설치 도우미 패널**이 자동으로 나타납니다.
-     "자동 설치 시도" 버튼(Mac: Homebrew, Windows: winget/Chocolatey 사용)을 눌러보고,
-     실패하면 패널의 "수동 설치 방법"에 있는 명령어를 복사해 터미널/PowerShell에 붙여넣으면 됩니다.
-   - 수동 설치 — Mac: `brew install ffmpeg` / Windows: `winget install --id=Gyan.FFmpeg -e`
-   - 설치 후 페이지의 "설치 확인" 버튼을 누르면 새로고침 없이 바로 사용 가능 상태로 전환됩니다.
+- **Python 3** 설치 — https://www.python.org/downloads/ (Windows는 설치 시 "Add to PATH" 체크)
+
+그 외에는 따로 설치할 것이 없습니다. 영상 처리 도구(ffmpeg)는 처음 실행할 때 자동으로 함께 설치됩니다.
+(PC에 이미 ffmpeg가 설치되어 있다면 그것을 우선 사용합니다.)
 
 ## 실행 방법
 
 - **Mac**: `run_mac.command` 더블클릭
+  - 처음 실행할 때는 필요한 프로그램을 내려받느라 1~2분 정도 걸릴 수 있습니다
   - 처음 실행 시 "확인되지 않은 개발자" 경고가 뜨면, 파일 우클릭 → 열기 를 선택
 - **Windows**: `run_windows.bat` 더블클릭
 
@@ -47,10 +45,6 @@ video-clip-cutter/
 
 ## 문제 해결
 
-- 브라우저에 "ffmpeg가 설치되어 있지 않습니다" 배너가 뜨면 → 설치 도우미 패널의 "자동 설치 시도" 또는 "수동 설치 방법"을 이용
-- 자동 설치가 "Homebrew/winget을 찾을 수 없다"며 실패하면 → 패널에 안내된 Homebrew(Mac) 설치 명령을 먼저 실행한 뒤 다시 시도
-- Mac에서 Homebrew 설치 시 **"Homebrew on macOS is only supported on Apple Silicon processors"** 오류가 뜨면
-  → 해당 Mac은 Intel(x86_64) 프로세서이고 최신 Homebrew가 Intel 지원을 중단한 경우입니다.
-  패널의 Mac 탭 하단 "MacPorts로 설치" 안내를 따라주세요 (MacPorts는 Intel Mac을 계속 지원합니다).
-  ffmpeg.org의 "소스 코드"(.tar.xz)는 직접 컴파일이 필요하므로 받지 않도록 주의하세요.
+- 화면에 "영상 처리 도구(ffmpeg)를 불러오지 못했습니다" 안내가 뜨면 → 프로그램 폴더의 `venv` 폴더를 삭제한 뒤 실행 파일을 다시 실행
+  (처음 실행 중 인터넷이 끊기는 등으로 설치가 덜 된 경우입니다)
 - 특정 구간만 실패하는 경우 → 다운로드된 zip 안 `errors.txt`에 실패 사유가 기록됨 (예: 시간 범위가 영상 길이를 벗어남)

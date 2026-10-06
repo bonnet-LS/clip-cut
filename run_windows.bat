@@ -8,16 +8,11 @@ if errorlevel 1 (
   exit /b 1
 )
 
-where ffmpeg >nul 2>nul
-if errorlevel 1 (
-  echo [경고] ffmpeg가 설치되어 있지 않습니다. https://ffmpeg.org 에서 설치 후 PATH에 등록해주세요.
-)
-
 if not exist venv (
-  echo 최초 실행입니다. 필요한 패키지를 설치합니다...
+  echo 최초 실행입니다. 필요한 프로그램을 설치합니다... ^(1~2분 정도 걸릴 수 있습니다^)
   python -m venv venv
-  venv\Scripts\pip install -q -r requirements.txt
 )
+venv\Scripts\pip install -q --disable-pip-version-check -r requirements.txt
 
 start "" http://127.0.0.1:5050
 echo ClipCut 서버를 시작합니다. 이 창을 닫으면 서버가 종료됩니다.
