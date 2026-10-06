@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClipCut 사용설명서</title>
+<style>
+  :root {
+    --bg: #f5f6fb;
+    --card: #ffffff;
+    --text: #1d1f2c;
+    --muted: #5f6377;
+    --border: #e3e5ef;
+    --primary: #6d5bff;
+    --primary-soft: #efedff;
+    --warn-bg: #fff7e6;
+    --warn-border: #f3d9a4;
+    --warn-text: #7a5a12;
+    --tip-bg: #e9f8f4;
+    --tip-border: #b6e6d9;
+    --tip-text: #145c4b;
+    --code-bg: #f1f2f8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14151d;
+      --card: #1d1f2b;
+      --text: #e8e9f1;
+      --muted: #a3a6b8;
+      --border: #2f3242;
+      --primary: #9a8dff;
+      --primary-soft: #2a2747;
+      --warn-bg: #3a3020;
+      --warn-border: #5c4a26;
+      --warn-text: #f0d79c;
+      --tip-bg: #18332d;
+      --tip-border: #285247;
+      --tip-text: #a7e8d7;
+      --code-bg: #262938;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Segoe UI", sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+  .page { max-width: 760px; margin: 0 auto; padding: 40px 16px 64px; }
+  header { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+  .mark {
+    width: 52px; height: 52px; border-radius: 14px;
+    display: grid; place-items: center; font-size: 26px;
+    background: linear-gradient(135deg, #6d5bff, #00b39b);
+  }
+  h1 { font-size: 26px; margin: 0; }
+  .lead { color: var(--muted); margin: 4px 0 28px; }
+  h2 { font-size: 19px; margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  h3 { font-size: 16px; margin: 22px 0 8px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    margin: 14px 0;
+  }
+  .card > :first-child { margin-top: 0; }
+  .card > :last-child { margin-bottom: 0; }
+  ol, ul { padding-left: 22px; margin: 8px 0; }
+  li { margin: 6px 0; }
+  code, kbd {
+    background: var(--code-bg);
+    border-radius: 6px;
+    padding: 1px 6px;
+    font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+    font-size: 13px;
+  }
+  .note, .tip {
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  .note { background: var(--warn-bg); border: 1px solid var(--warn-border); color: var(--warn-text); }
+  .tip  { background: var(--tip-bg);  border: 1px solid var(--tip-border);  color: var(--tip-text); }
+
+  .tabs {
+    display: flex; gap: 6px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 6px;
+    position: sticky; top: 8px; z-index: 2;
+  }
+  .tab {
+    flex: 1;
+    border: 0; cursor: pointer;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 15px; font-weight: 700;
+    background: transparent; color: var(--muted);
+  }
+  .tab[aria-selected="true"] { background: var(--primary-soft); color: var(--primary); }
+  .pane[hidden] { display: none; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; white-space: nowrap; }
+  .table-wrap { overflow-x: auto; }
+
+  footer { margin-top: 48px; color: var(--muted); font-size: 13px; text-align: center; }
+
+  @media print {
+    .tabs { display: none; }
+    .pane[hidden] { display: block; }
+    .pane + .pane { page-break-before: always; }
+    body { background: #fff; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="mark">✂️</div>
+    <h1>ClipCut 사용설명서</h1>
+  </header>
+  <p class="lead">영상을 올리고 자를 시간만 입력하면, 원하는 부분만 mp4 클립으로 잘라 한 번에 받을 수 있는 프로그램입니다.</p>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-mac" aria-controls="pane-mac" aria-selected="true">Mac 사용자</button>
+    <button class="tab" role="tab" id="tab-win" aria-controls="pane-win" aria-selected="false">Windows 사용자</button>
+  </div>
+
+  <!-- ===================== Mac ===================== -->
+  <section class="pane" id="pane-mac" role="tabpanel" aria-labelledby="tab-mac">
+    <h2>1. 처음 한 번만 준비하기</h2>
+
+    <div class="card">
+      <h3>① Python 설치</h3>
+      <ol>
+        <li><a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org/downloads</a> 에 접속해 노란색 <b>Download Python</b> 버튼을 누릅니다.</li>
+        <li>받은 <code>.pkg</code> 파일을 더블클릭해 안내에 따라 설치합니다. (계속 → 동의 → 설치, Mac 비밀번호 입력)</li>
+      </ol>
+      <div class="tip">💡 Python은 ClipCut이 돌아가는 데 필요한 기본 프로그램입니다. 한 번만 설치하면 됩니다.</div>
+    </div>
+
+    <div class="card">
+      <h3>② ClipCut 압축 풀기</h3>
+      <ol>
+        <li>전달받은 <code>ClipCut.zip</code> 파일을 더블클릭하면 <b>ClipCut</b> 폴더가 생깁니다.</li>
+        <li>이 폴더를 원하는 곳(예: 문서 폴더)으로 옮겨 둡니다.</li>
+      </ol>
+    </div>
+
+    <h2>2. 실행하기</h2>
+    <div class="card">
+      <ol>
+        <li><b>ClipCut</b> 폴더 안의 <code>run_mac.command</code> 파일을 더블클릭합니다.</li>
+        <li>검은 터미널 창이 열리고, <b>처음 실행할 때만</b> 필요한 구성요소를 내려받느라 1~2분 정도 걸립니다.</li>
+        <li>잠시 후 인터넷 브라우저에 ClipCut 화면이 자동으로 열립니다.</li>
+      </ol>
+
+      <div class="note">
+        ⚠ <b>"확인되지 않은 개발자" 또는 "열 수 없습니다" 경고가 뜨는 경우</b> (처음 한 번만)
+        <ol>
+          <li>경고 창에서 <b>완료</b>(또는 취소)를 누릅니다.</li>
+          <li>화면 왼쪽 위  메뉴 → <b>시스템 설정</b> → <b>개인정보 보호 및 보안</b>으로 갑니다.</li>
+          <li>아래로 내려 "run_mac.command이(가) 차단되었습니다" 옆의 <b>그래도 열기</b>를 누릅니다.</li>
+          <li>다시 <code>run_mac.command</code>를 더블클릭하고 <b>열기</b>를 누릅니다.</li>
+        </ol>
+      </div>
+
+      <div class="note">
+        ⚠ <b>"명령 라인 개발자 도구를 설치하겠습니까?"</b> 창이 뜨면 Python이 설치되지 않은 상태입니다.
+        창을 닫고 위의 <b>① Python 설치</b>를 먼저 진행해 주세요.
+      </div>
+
+      <div class="tip">
+        💡 <b>터미널 창은 ClipCut을 쓰는 동안 닫지 마세요.</b> 창을 닫으면 프로그램도 꺼집니다.
+        브라우저 창을 실수로 닫았다면 주소창에 <code>http://127.0.0.1:5050</code> 을 입력하면 다시 열립니다.
+      </div>
+    </div>
+
+    <h2>3. 영상 자르기</h2>
+    <div class="usage-mac"></div>
+
+    <h2>4. 끝내기</h2>
+    <div class="card">
+      <p style="margin:0">터미널 창을 닫으면 됩니다. "프로세스를 종료하겠습니까?"라고 물으면 <b>종료</b>를 누르세요.</p>
+    </div>
+
+    <h2>5. 문제가 생겼을 때</h2>
+    <div class="trouble"></div>
+  </section>
+
+  <!-- ===================== Windows ===================== -->
+  <section class="pane" id="pane-win" role="tabpanel" aria-labelledby="tab-win" hidden>
+    <h2>1. 처음 한 번만 준비하기</h2>
+
+    <div class="card">
+      <h3>① Python 설치</h3>
+      <ol>
+        <li><a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org/downloads</a> 에 접속해 노란색 <b>Download Python</b> 버튼을 누릅니다.</li>
+        <li>받은 설치 파일(<code>.exe</code>)을 실행합니다.</li>
+        <li>첫 화면 아래쪽의 <b>"Add python.exe to PATH"</b> 칸에 <b>반드시 체크</b>한 뒤 <b>Install Now</b>를 누릅니다.</li>
+      </ol>
+      <div class="note">⚠ <b>"Add python.exe to PATH"</b> 체크를 빠뜨리면 ClipCut이 Python을 찾지 못합니다. 이미 체크 없이 설치했다면 설치 파일을 다시 실행해 <b>Modify</b> → <b>Next</b> → <b>"Add Python to environment variables"</b> 체크 → <b>Install</b> 순서로 눌러 주세요.</div>
+    </div>
+
+    <div class="card">
+      <h3>② ClipCut 압축 풀기</h3>
+      <ol>
+        <li>전달받은 <code>ClipCut.zip</code> 파일을 마우스 오른쪽 버튼으로 클릭 → <b>압축 풀기</b>(모두 압축 풀기)를 선택합니다.</li>
+        <li>압축이 풀린 <b>ClipCut</b> 폴더를 원하는 곳(예: 문서 폴더)에 둡니다.</li>
+      </ol>
+      <div class="note">⚠ zip 파일을 더블클릭해서 <b>압축을 풀지 않은 채</b> 안에서 바로 실행하면 동작하지 않습니다. 꼭 압축을 풀어 주세요.</div>
+    </div>
+
+    <h2>2. 실행하기</h2>
+    <div class="card">
+      <ol>
+        <li><b>ClipCut</b> 폴더 안의 <code>run_windows.bat</code> 파일을 더블클릭합니다.</li>
+        <li>검은 명령 창이 열리고, <b>처음 실행할 때만</b> 필요한 구성요소를 내려받느라 1~2분 정도 걸립니다.</li>
+        <li>잠시 후 인터넷 브라우저에 ClipCut 화면이 자동으로 열립니다. 화면이 비어 있거나 "연결할 수 없음"이 보이면 몇 초 뒤 <kbd>F5</kbd>(새로고침)를 눌러 주세요.</li>
+      </ol>
+
+      <div class="note">
+        ⚠ <b>"Windows의 PC 보호" 파란 창이 뜨는 경우</b> (처음 한 번만)
+        <ol>
+          <li>창 안의 <b>추가 정보</b>를 누릅니다.</li>
+          <li><b>실행</b> 버튼을 누릅니다.</li>
+        </ol>
+      </div>
+
+      <div class="note">
+        ⚠ <b>Microsoft Store가 열리거나 "Python이 설치되어 있지 않습니다"</b>라고 나오면 Python이 제대로 설치되지 않은 상태입니다.
+        위의 <b>① Python 설치</b>를 "Add python.exe to PATH" 체크와 함께 다시 진행해 주세요.
+      </div>
+
+      <div class="tip">
+        💡 <b>검은 명령 창은 ClipCut을 쓰는 동안 닫지 마세요.</b> 창을 닫으면 프로그램도 꺼집니다.
+        브라우저 창을 실수로 닫았다면 주소창에 <code>http://127.0.0.1:5050</code> 을 입력하면 다시 열립니다.
+      </div>
+    </div>
+
+    <h2>3. 영상 자르기</h2>
+    <div class="usage-win"></div>
+
+    <h2>4. 끝내기</h2>
+    <div class="card">
+      <p style="margin:0">검은 명령 창의 <b>X</b> 버튼을 눌러 닫으면 됩니다.</p>
+    </div>
+
+    <h2>5. 문제가 생겼을 때</h2>
+    <div class="trouble"></div>
+  </section>
+
+  <!-- 공통 내용: Mac/Windows 탭에 똑같이 들어갑니다 -->
+  <template id="usage">
+    <div class="card">
+      <ol>
+        <li><b>영상 올리기</b> — 점선 상자에 영상 파일을 끌어다 놓거나, 상자를 클릭해 파일을 고릅니다. (mp4, mov, mkv, avi, m4v, webm)</li>
+        <li><b>처리 방식 고르기</b>
+          <ul>
+            <li>🎯 <b>정확 모드</b>: 입력한 시간 그대로 정확하게 자릅니다. 대신 시간이 조금 더 걸립니다. <i>잘 모르겠으면 이걸 쓰세요.</i></li>
+            <li>⚡ <b>빠른 모드</b>: 아주 빠르게 자르지만, 시작·끝 지점이 1초 정도 어긋날 수 있습니다.</li>
+          </ul>
+        </li>
+        <li><b>(선택) 크롭 비율·해상도 고르기</b> — 필요 없으면 그대로 두세요. 아래 표를 참고하세요.</li>
+        <li><b>자를 구간 입력</b> — 시작 시간과 종료 시간을 입력합니다. 클립 이름은 적지 않아도 됩니다.
+          <br>여러 부분을 자르려면 <b>+ 구간 추가</b>를 눌러 줄을 늘립니다. 줄 끝의 <b>✕</b>로 지울 수 있습니다.</li>
+        <li><b>✂️ 편집 시작</b>을 누릅니다.</li>
+        <li>완료되면 <code>clips.zip</code> 파일이 자동으로 다운로드됩니다. <b>다운로드 폴더</b>에서 압축을 풀면 잘린 클립들이 들어 있습니다.</li>
+      </ol>
+    </div>
+
+    <h3>시간 입력 방법</h3>
+    <div class="card table-wrap">
+      <table>
+        <tr><th>입력 예시</th><th>뜻</th></tr>
+        <tr><td><code>1:23</code></td><td>1분 23초</td></tr>
+        <tr><td><code>01:02:03</code></td><td>1시간 2분 3초</td></tr>
+        <tr><td><code>83.5</code></td><td>83.5초 (= 1분 23.5초)</td></tr>
+        <tr><td><code>0:10</code> ~ <code>0:35</code></td><td>10초부터 35초까지 (25초짜리 클립)</td></tr>
+      </table>
+    </div>
+
+    <h3>크롭 비율 · 해상도</h3>
+    <div class="card table-wrap">
+      <table>
+        <tr><th>크롭 비율</th><th>이럴 때</th></tr>
+        <tr><td>원본 비율 유지</td><td>화면 비율을 바꾸지 않음</td></tr>
+        <tr><td>정사각형 1:1</td><td>정사각형 게시물</td></tr>
+        <tr><td>세로 9:16</td><td>릴스 · 쇼츠 · 스토리</td></tr>
+        <tr><td>세로 4:5</td><td>인스타그램 피드</td></tr>
+        <tr><td>가로 16:9</td><td>유튜브 등 일반 가로 영상</td></tr>
+      </table>
+      <p style="margin:12px 0 0;font-size:14px;color:var(--muted)">크롭은 화면 <b>가운데</b>를 기준으로 잘라냅니다. 해상도는 고화질(1920) · 중화질(1280) · 저화질(854) 중에서 고르며, 숫자는 영상의 긴 쪽 길이(픽셀)입니다. 크롭이나 해상도를 지정하면 빠른 모드를 골라도 정확 모드처럼 처리되어 시간이 조금 더 걸립니다.</p>
+    </div>
+  </template>
+
+  <template id="trouble">
+    <div class="card table-wrap">
+      <table>
+        <tr><th>증상</th><th>해결 방법</th></tr>
+        <tr>
+          <td>"영상 처리 도구(ffmpeg)를 불러오지 못했습니다" 안내가 보임</td>
+          <td>프로그램을 끄고, ClipCut 폴더 안의 <code>venv</code> 폴더를 삭제한 뒤 다시 실행하세요. (처음 실행할 때 인터넷이 끊겨 설치가 덜 된 경우입니다)</td>
+        </tr>
+        <tr>
+          <td>"시간 형식이 올바르지 않습니다"</td>
+          <td>시간을 <code>1:23</code>, <code>83.5</code>, <code>01:02:03</code> 같은 형식으로 입력했는지 확인하세요. 콜론(<code>:</code>) 대신 다른 기호를 쓰면 안 됩니다.</td>
+        </tr>
+        <tr>
+          <td>일부 클립만 빠져 있음</td>
+          <td>받은 <code>clips.zip</code> 안의 <code>errors.txt</code>를 열어 보세요. 대부분 종료 시간이 영상 길이보다 길게 입력된 경우입니다.</td>
+        </tr>
+        <tr>
+          <td>"편집 시작" 후 오래 걸림</td>
+          <td>정상입니다. 영상이 길거나 크롭·해상도를 지정하면 몇 분 걸릴 수 있습니다. 화면을 닫지 말고 기다려 주세요.</td>
+        </tr>
+        <tr>
+          <td>브라우저 화면이 안 열림</td>
+          <td>브라우저 주소창에 <code>http://127.0.0.1:5050</code> 을 직접 입력해 보세요. 그래도 안 되면 실행 창(검은 창)이 열려 있는지 확인하세요.</td>
+        </tr>
+      </table>
+    </div>
+    <div class="tip">💡 올린 영상은 <b>내 컴퓨터 안에서만</b> 처리되며 인터넷으로 전송되지 않습니다. (인터넷은 처음 설치할 때만 사용합니다)</div>
+  </template>
+
+  <footer>ClipCut · 사내 영상 컷편집 도구 · 해결되지 않는 문제는 프로그램을 공유해 준 담당자에게 문의해 주세요.</footer>
+</div>
+
+<script>
+  // 공통 내용을 두 탭에 채워 넣기
+  const usage = document.getElementById("usage");
+  const trouble = document.getElementById("trouble");
+  document.querySelectorAll(".usage-mac, .usage-win").forEach((el) => el.appendChild(usage.content.cloneNode(true)));
+  document.querySelectorAll(".trouble").forEach((el) => el.appendChild(trouble.content.cloneNode(true)));
+
+  // 탭 전환
+  const tabs = document.querySelectorAll(".tab");
+  function selectTab(tab) {
+    tabs.forEach((t) => {
+      const on = t === tab;
+      t.setAttribute("aria-selected", on);
+      document.getElementById(t.getAttribute("aria-controls")).hidden = !on;
+    });
+  }
+  tabs.forEach((t) => t.addEventListener("click", () => selectTab(t)));
+
+  // 열어 본 컴퓨터가 Windows면 Windows 탭을 먼저 보여주기
+  if (/Windows/i.test(navigator.userAgent)) selectTab(document.getElementById("tab-win"));
+</script>
+</body>
+</html>
