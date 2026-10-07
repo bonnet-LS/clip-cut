@@ -114,11 +114,30 @@
 
   footer { margin-top: 48px; color: var(--muted); font-size: 13px; text-align: center; }
 
+  .print-title { display: none; }
+
   @media print {
+    @page { size: A4; margin: 14mm 12mm; }
+    :root {
+      --bg: #fff; --card: #fff; --text: #1d1f2c; --muted: #5f6377; --border: #e3e5ef;
+      --primary: #6d5bff; --primary-soft: #efedff; --code-bg: #f1f2f8;
+      --warn-bg: #fff7e6; --warn-border: #f3d9a4; --warn-text: #7a5a12;
+      --tip-bg: #e9f8f4; --tip-border: #b6e6d9; --tip-text: #145c4b;
+    }
+    body { background: #fff; font-size: 13px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .page { max-width: none; padding: 0; }
     .tabs { display: none; }
-    .pane[hidden] { display: block; }
-    .pane + .pane { page-break-before: always; }
-    body { background: #fff; }
+    body:not(.print-one) .pane[hidden] { display: block; }
+    body:not(.print-one) .pane + .pane { break-before: page; }
+    .print-title {
+      display: block;
+      margin: 8px 0 0; padding: 8px 14px;
+      background: var(--primary-soft); color: var(--primary);
+      border-radius: 10px; font-weight: 700; font-size: 15px;
+    }
+    .card, .note, .tip, tr { break-inside: avoid; }
+    h2, h3 { break-after: avoid; }
+    a { color: inherit; }
   }
 </style>
 </head>
@@ -137,6 +156,7 @@
 
   <!-- ===================== Mac ===================== -->
   <section class="pane" id="pane-mac" role="tabpanel" aria-labelledby="tab-mac">
+    <div class="print-title">Mac 사용자용 안내</div>
     <h2>1. 처음 한 번만 준비하기</h2>
 
     <div class="card">
@@ -168,7 +188,7 @@
         ⚠ <b>"확인되지 않은 개발자" 또는 "열 수 없습니다" 경고가 뜨는 경우</b> (처음 한 번만)
         <ol>
           <li>경고 창에서 <b>완료</b>(또는 취소)를 누릅니다.</li>
-          <li>화면 왼쪽 위  메뉴 → <b>시스템 설정</b> → <b>개인정보 보호 및 보안</b>으로 갑니다.</li>
+          <li>화면 왼쪽 위 <b>사과(Apple) 메뉴</b> → <b>시스템 설정</b> → <b>개인정보 보호 및 보안</b>으로 갑니다.</li>
           <li>아래로 내려 "run_mac.command이(가) 차단되었습니다" 옆의 <b>그래도 열기</b>를 누릅니다.</li>
           <li>다시 <code>run_mac.command</code>를 더블클릭하고 <b>열기</b>를 누릅니다.</li>
         </ol>
@@ -199,6 +219,7 @@
 
   <!-- ===================== Windows ===================== -->
   <section class="pane" id="pane-win" role="tabpanel" aria-labelledby="tab-win" hidden>
+    <div class="print-title">Windows 사용자용 안내</div>
     <h2>1. 처음 한 번만 준비하기</h2>
 
     <div class="card">
@@ -353,8 +374,15 @@
   }
   tabs.forEach((t) => t.addEventListener("click", () => selectTab(t)));
 
-  // 열어 본 컴퓨터가 Windows면 Windows 탭을 먼저 보여주기
-  if (/Windows/i.test(navigator.userAgent)) selectTab(document.getElementById("tab-win"));
+  // 주소 끝에 #mac / #windows 가 있으면 해당 안내만 보여주고 인쇄하기 (PDF 제작용)
+  // 없으면, 열어 본 컴퓨터가 Windows일 때 Windows 탭을 먼저 보여주기
+  const hash = location.hash.toLowerCase();
+  if (hash === "#mac" || hash === "#windows") {
+    document.body.classList.add("print-one");
+    if (hash === "#windows") selectTab(document.getElementById("tab-win"));
+  } else if (/Windows/i.test(navigator.userAgent)) {
+    selectTab(document.getElementById("tab-win"));
+  }
 </script>
 </body>
 </html>
