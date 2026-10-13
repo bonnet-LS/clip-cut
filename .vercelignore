@@ -1,0 +1,15 @@
+# Vercel(웹 버전) 빌드에는 ui/ 와 web/ 만 필요하다. 로컬 실행·데스크톱 앱 파일은 올리지 않는다.
+*.py
+requirements*.txt
+*.command
+*.bat
+*.spec
+*.html
+!ui/index.html
+static/
+scripts/
+uploads/
+outputs/
+.env*
+web/node_modules/
+web/public/

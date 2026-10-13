@@ -44,7 +44,7 @@ desktop.py          # 데스크톱 앱 (pywebview)
 web/                # 웹 버전 (ffmpeg.wasm, Vercel 배포)
   src/web.js        #   브라우저용 엔진
   scripts/build.mjs #   ui/ + 엔진을 public/ 으로 빌드
-  vercel.json       #   보안 헤더 (COOP/COEP, CSP)
+vercel.json         # Vercel 빌드 설정 + 보안 헤더 (COOP/COEP, CSP)
 ```
 
 ## 웹 버전 개발·배포

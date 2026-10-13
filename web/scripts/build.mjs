@@ -54,8 +54,9 @@ for (const core of ["core", "core-mt"]) {
   writeFileSync(file, src.replace(ORIGINAL_READ, CACHED_READ));
 }
 
-// 배포 설정(교차 출처 격리 헤더 등)을 함께 넣어 public/ 폴더 그대로 Vercel에 올릴 수 있게 한다.
-cpSync(join(root, "vercel.json"), join(out, "vercel.json"));
+// public/ 폴더만 CLI로 올릴 때 쓰도록 헤더 설정만 남긴 vercel.json을 넣는다 (빌드 설정은 저장소 루트 vercel.json).
+const vercelConfig = JSON.parse(readFileSync(join(root, "..", "vercel.json"), "utf8"));
+writeFileSync(join(out, "vercel.json"), JSON.stringify({ headers: vercelConfig.headers }, null, 2) + "\n");
 // Vercel CLI가 이 폴더에 만드는 인증 토큰 파일(.env*) 등이 절대 배포되지 않도록 제외한다.
 writeFileSync(join(out, ".vercelignore"), ".env*\n.vercel\n.gitignore\n");
 

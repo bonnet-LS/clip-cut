@@ -9,3 +9,6 @@ outputs/*
 build/
 dist/
 assets/
+.vercel/
+.env*
+.vercel

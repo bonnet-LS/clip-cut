@@ -1,4 +1,4 @@
-"""로컬 테스트 서버: vercel.json 에 적힌 헤더(교차 출처 격리, CSP 등)를 똑같이 붙여 public/ 을 제공한다.
+"""로컬 테스트 서버: 저장소 루트 vercel.json 에 적힌 헤더(교차 출처 격리, CSP 등)를 똑같이 붙여 public/ 을 제공한다.
 
 사용법: python3 scripts/dev_server.py [포트]  (기본 5080)
 """
@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 RULES = [
     (re.compile("^" + rule["source"].replace("(.*)", ".*") + "$"), rule["headers"])
-    for rule in json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))["headers"]
+    for rule in json.loads((ROOT.parent / "vercel.json").read_text(encoding="utf-8"))["headers"]
 ]
 
 
