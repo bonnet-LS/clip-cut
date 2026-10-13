@@ -6,3 +6,9 @@ uploads/*
 outputs/*
 !outputs/.gitkeep
 .DS_Store
+build/
+dist/
+assets/
+.vercel/
+.env*
+.vercel

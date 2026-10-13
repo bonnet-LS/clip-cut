@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClipCut</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 아이콘 모음 -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-film" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-scissors" viewBox="0 0 24 24"><circle cx="6" cy="7" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="6" cy="17" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 8.5 20 18M8.5 15.5 20 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="16" cy="7" r="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="10" cy="17" r="2" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4m0 0-4.5 4.5M12 4l4.5 4.5M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 5 13.5h6L10 21l8-10.5h-6L13 3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H10l2 2.5h6.5A2.5 2.5 0 0 1 21 10v6.5a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 16.5v-9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7.5v5.5M12 16.5v.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  </svg>
+
+  <div class="shell">
+    <!-- 상단: 로고 + 단계 표시 -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark"><svg><use href="#i-scissors"/></svg></span>
+        <span class="brand-name">ClipCut</span>
+        <span class="version" id="version"></span>
+      </div>
+      <ol class="stepper" id="stepper">
+        <li data-step="1"><span class="dot">1</span><span class="step-name">영상 선택</span></li>
+        <li data-step="2"><span class="dot">2</span><span class="step-name">구간 입력</span></li>
+        <li data-step="3"><span class="dot">3</span><span class="step-name">출력 설정</span></li>
+        <li data-step="4"><span class="dot">4</span><span class="step-name">완료</span></li>
+      </ol>
+    </header>
+
+    <main class="stage">
+      <div id="banner" class="banner" hidden><svg><use href="#i-alert"/></svg><span id="bannerText"></span></div>
+
+      <!-- STEP 1: 영상 선택 -->
+      <section class="panel" data-panel="1">
+        <div class="panel-head">
+          <span class="panel-icon"><svg><use href="#i-film"/></svg></span>
+          <div>
+            <h1>어떤 영상을 자를까요?</h1>
+            <p>컷편집할 원본 영상을 선택하세요. 영상은 이 컴퓨터 안에서만 처리됩니다.</p>
+          </div>
+        </div>
+
+        <button type="button" class="dropzone" id="dropzone">
+          <span class="dropzone-icon"><svg><use href="#i-upload"/></svg></span>
+          <span class="dropzone-title">여기를 클릭해 영상 파일 선택</span>
+          <span class="dropzone-sub">또는 영상 파일을 이 창으로 끌어다 놓으세요</span>
+          <span class="formats">MP4 · MOV · MKV · AVI · M4V · WEBM</span>
+        </button>
+
+        <div class="file-card" id="fileCard" hidden>
+          <span class="file-thumb"><svg><use href="#i-film"/></svg></span>
+          <div class="file-meta">
+            <div class="file-name" id="fileName"></div>
+            <div class="file-tags">
+              <span class="tag" id="fileDuration"></span>
+              <span class="tag" id="fileSize"></span>
+            </div>
+          </div>
+          <span class="file-ok"><svg><use href="#i-check"/></svg>선택됨</span>
+          <button type="button" class="btn subtle" id="changeVideo">다른 영상</button>
+        </div>
+      </section>
+
+      <!-- STEP 2: 구간 입력 -->
+      <section class="panel" data-panel="2" hidden>
+        <div class="panel-head">
+          <span class="panel-icon"><svg><use href="#i-scissors"/></svg></span>
+          <div>
+            <h1>어느 부분을 잘라낼까요?</h1>
+            <p>남길 구간의 시작과 끝 시간을 입력하세요. 구간마다 클립 파일이 하나씩 만들어집니다.</p>
+          </div>
+        </div>
+
+        <div class="timeline-card">
+          <div class="timeline-top">
+            <span class="timeline-label">전체 영상</span>
+            <span class="timeline-total" id="timelineTotal"></span>
+          </div>
+          <div class="timeline" id="timeline"></div>
+          <div class="timeline-scale"><span>0:00</span><span id="timelineEnd"></span></div>
+        </div>
+
+        <div class="format-tip">
+          시간 입력 예시 <code>1:23</code> (1분 23초) · <code>83.5</code> (83.5초) · <code>1:02:03</code> (1시간 2분 3초)
+        </div>
+
+        <div id="segments" class="segments"></div>
+
+        <button type="button" class="add-segment" id="addRow">
+          <svg><use href="#i-plus"/></svg>구간 추가
+        </button>
+      </section>
+
+      <!-- STEP 3: 출력 설정 -->
+      <section class="panel" data-panel="3" hidden>
+        <div class="panel-head">
+          <span class="panel-icon"><svg><use href="#i-sliders"/></svg></span>
+          <div>
+            <h1>어떻게 저장할까요?</h1>
+            <p>잘 모르겠다면 기본값 그대로 두고 바로 시작해도 됩니다.</p>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="group-title">처리 방식</div>
+          <div class="choice-grid two">
+            <label class="choice">
+              <input type="radio" name="mode" value="accurate" checked>
+              <span class="choice-body">
+                <span class="choice-icon"><svg><use href="#i-target"/></svg></span>
+                <span class="choice-title">정확하게 <em>추천</em></span>
+                <span class="choice-desc">입력한 시간 그대로 정밀하게 자릅니다. 시간이 조금 더 걸려요.</span>
+              </span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="mode" value="fast">
+              <span class="choice-body">
+                <span class="choice-icon"><svg><use href="#i-bolt"/></svg></span>
+                <span class="choice-title">빠르게</span>
+                <span class="choice-desc">원본을 그대로 복사해 몇 초 만에 끝납니다. 경계가 1초 정도 어긋날 수 있어요.</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="group-title">화면 비율</div>
+          <div class="ratio-grid" id="ratioGrid">
+            <label class="ratio"><input type="radio" name="crop" value="original" checked><span class="ratio-body"><span class="ratio-frame"><span class="ratio-shape" style="--w:30px;--h:22px;border-style:dashed"></span></span><span class="ratio-name">원본</span><span class="ratio-sub">그대로</span></span></label>
+            <label class="ratio"><input type="radio" name="crop" value="9:16"><span class="ratio-body"><span class="ratio-frame"><span class="ratio-shape" style="--w:18px;--h:32px"></span></span><span class="ratio-name">9:16</span><span class="ratio-sub">릴스·쇼츠</span></span></label>
+            <label class="ratio"><input type="radio" name="crop" value="4:5"><span class="ratio-body"><span class="ratio-frame"><span class="ratio-shape" style="--w:24px;--h:30px"></span></span><span class="ratio-name">4:5</span><span class="ratio-sub">인스타 피드</span></span></label>
+            <label class="ratio"><input type="radio" name="crop" value="1:1"><span class="ratio-body"><span class="ratio-frame"><span class="ratio-shape" style="--w:28px;--h:28px"></span></span><span class="ratio-name">1:1</span><span class="ratio-sub">정사각형</span></span></label>
+            <label class="ratio"><input type="radio" name="crop" value="16:9"><span class="ratio-body"><span class="ratio-frame"><span class="ratio-shape" style="--w:36px;--h:20px"></span></span><span class="ratio-name">16:9</span><span class="ratio-sub">가로 영상</span></span></label>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="group-title">화질</div>
+          <div class="chips" id="resChips">
+            <label class="chip"><input type="radio" name="res" value="original" checked><span>원본 화질</span></label>
+            <label class="chip"><input type="radio" name="res" value="high"><span>고화질 1920</span></label>
+            <label class="chip"><input type="radio" name="res" value="medium"><span>중화질 1280</span></label>
+            <label class="chip"><input type="radio" name="res" value="low"><span>저화질 854</span></label>
+          </div>
+        </div>
+
+        <div class="notice" id="reencodeNotice" hidden>
+          <svg><use href="#i-alert"/></svg>
+          <span>화면 비율이나 화질을 바꾸면 ‘빠르게’를 골라도 새로 인코딩되어 시간이 더 걸립니다.</span>
+        </div>
+
+        <div class="group">
+          <div class="group-title">저장 위치</div>
+          <div class="save-row">
+            <span class="save-icon"><svg><use href="#i-folder"/></svg></span>
+            <div class="save-meta">
+              <div class="save-path" id="outputPath"></div>
+              <div class="save-sub" id="outputSub"></div>
+            </div>
+            <button type="button" class="btn subtle" id="changeOutput">변경</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 4: 진행 / 완료 -->
+      <section class="panel center" data-panel="4" hidden>
+        <div id="runView">
+          <div class="ring" id="ring" style="--p:0">
+            <span class="ring-pct" id="progressPct">0%</span>
+          </div>
+          <h1>자르는 중이에요</h1>
+          <p class="muted" id="progressLabel">준비 중…</p>
+          <button type="button" class="btn subtle" id="cancelBtn">취소</button>
+        </div>
+
+        <div id="doneView" hidden>
+          <div class="result-badge" id="resultBadge"><svg><use href="#i-check"/></svg></div>
+          <h1 id="doneTitle"></h1>
+          <p class="muted" id="doneText"></p>
+          <ul class="result-list" id="resultList"></ul>
+          <div class="done-actions">
+            <button type="button" class="btn primary lg" id="openFolderBtn"><svg><use href="#i-folder"/></svg>폴더 열기</button>
+          </div>
+          <div class="done-links">
+            <button type="button" class="link" id="sameVideoBtn">같은 영상에서 더 자르기</button>
+            <span class="sep">·</span>
+            <button type="button" class="link" id="newJobBtn">새 영상으로 시작</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 하단 이동 버튼 -->
+    <footer class="navbar" id="navbar">
+      <div class="navbar-inner">
+        <button type="button" class="btn subtle" id="backBtn">← 이전</button>
+        <span class="nav-hint" id="navHint"></span>
+        <button type="button" class="btn primary" id="nextBtn">다음 →</button>
+      </div>
+    </footer>
+  </div>
+
+  <template id="rowTemplate">
+    <div class="segment">
+      <span class="seg-badge"></span>
+      <div class="seg-fields">
+        <label class="seg-field">
+          <span>시작</span>
+          <input type="text" class="start" placeholder="0:10" inputmode="decimal" autocomplete="off">
+        </label>
+        <span class="seg-arrow">→</span>
+        <label class="seg-field">
+          <span>끝</span>
+          <input type="text" class="end" placeholder="0:35" inputmode="decimal" autocomplete="off">
+        </label>
+        <label class="seg-field grow">
+          <span>클립 이름 (선택)</span>
+          <input type="text" class="label" placeholder="예: 인트로" autocomplete="off">
+        </label>
+      </div>
+      <span class="seg-len">–</span>
+      <button type="button" class="icon-btn remove" aria-label="구간 삭제"><svg><use href="#i-x"/></svg></button>
+      <div class="seg-error"></div>
+    </div>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>

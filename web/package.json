@@ -1,0 +1,17 @@
+{
+  "name": "clipcut-web",
+  "version": "2.0.0",
+  "private": true,
+  "description": "ClipCut 웹 버전 (브라우저 안에서 ffmpeg.wasm으로 처리)",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "npm run build && python3 scripts/dev_server.py",
+    "deploy": "npm run build && npx vercel@63.1.2 deploy public --prod"
+  },
+  "dependencies": {
+    "@ffmpeg/core": "0.12.10",
+    "@ffmpeg/core-mt": "0.12.10",
+    "@ffmpeg/ffmpeg": "0.12.15",
+    "fflate": "0.8.2"
+  }
+}
