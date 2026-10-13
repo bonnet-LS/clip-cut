@@ -15,7 +15,6 @@ if not exist venv (
 )
 venv\Scripts\pip install -q --disable-pip-version-check -r requirements.txt
 
-start "" http://127.0.0.1:5050
-echo ClipCut 서버를 시작합니다. 이 창을 닫으면 서버가 종료됩니다.
+echo ClipCut을 시작합니다. 잠시 후 브라우저가 열립니다. 이 창을 닫으면 종료됩니다.
 venv\Scripts\python app.py
 pause
